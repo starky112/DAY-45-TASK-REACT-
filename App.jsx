@@ -1,168 +1,82 @@
 import { useState } from "react";
-import "./App.css";
 
 function App() {
-  const [input, setInput] = useState("");
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
 
-  const handleClick = (value) => {
-    setInput(input + value);
-  };
+  const getWeather = async () => {
+    if (!city) return;
 
-  const clearInput = () => {
-    setInput("");
-  };
+    const response = await fetch(
+      `https://wttr.in/${city}?format=j1`
+    );
 
-  const calculateResult = () => {
-    try {
-      setInput(eval(input).toString());
-    } catch {
-      setInput("Error");
-    }
+    const data = await response.json();
+
+    setWeather(data.current_condition[0]);
   };
 
   return (
-    <div className="container">
-      <div className="calculator">
-        <input
-          type="text"
-          value={input}
-          readOnly
-        />
+    <div
+      style={{
+        textAlign: "center",
+        marginTop: "50px",
+        fontFamily: "Arial",
+      }}
+    >
+      <h1>Weather App</h1>
 
-        <div className="buttons">
-          <button onClick={clearInput}>
-            C
-          </button>
+      <input
+        type="text"
+        placeholder="Enter city"
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        style={{
+          padding: "10px",
+          width: "200px",
+        }}
+      />
 
-          <button
-            onClick={() =>
-              handleClick("/")
-            }
-          >
-            /
-          </button>
+      <button
+        onClick={getWeather}
+        style={{
+          padding: "10px",
+          marginLeft: "10px",
+        }}
+      >
+        Search
+      </button>
 
-          <button
-            onClick={() =>
-              handleClick("*")
-            }
-          >
-            *
-          </button>
+      {weather && (
+        <div
+          style={{
+            marginTop: "20px",
+            border: "1px solid gray",
+            padding: "20px",
+            width: "300px",
+            marginInline: "auto",
+            borderRadius: "10px",
+          }}
+        >
+          <h2>{city}</h2>
 
-          <button
-            onClick={() =>
-              handleClick("-")
-            }
-          >
-            -
-          </button>
+          <p>
+            Temperature: {weather.temp_C}°C
+          </p>
 
-          <button
-            onClick={() =>
-              handleClick("7")
-            }
-          >
-            7
-          </button>
+          <p>
+            Weather: {weather.weatherDesc[0].value}
+          </p>
 
-          <button
-            onClick={() =>
-              handleClick("8")
-            }
-          >
-            8
-          </button>
+          <p>
+            Humidity: {weather.humidity}%
+          </p>
 
-          <button
-            onClick={() =>
-              handleClick("9")
-            }
-          >
-            9
-          </button>
-
-          <button
-            onClick={() =>
-              handleClick("+")
-            }
-          >
-            +
-          </button>
-
-          <button
-            onClick={() =>
-              handleClick("4")
-            }
-          >
-            4
-          </button>
-
-          <button
-            onClick={() =>
-              handleClick("5")
-            }
-          >
-            5
-          </button>
-
-          <button
-            onClick={() =>
-              handleClick("6")
-            }
-          >
-            6
-          </button>
-
-          <button
-            onClick={() =>
-              handleClick("1")
-            }
-          >
-            1
-          </button>
-
-          <button
-            onClick={() =>
-              handleClick("2")
-            }
-          >
-            2
-          </button>
-
-          <button
-            onClick={() =>
-              handleClick("3")
-            }
-          >
-            3
-          </button>
-
-          <button
-            className="equal"
-            onClick={calculateResult}
-          >
-            =
-          </button>
-
-          <button
-            className="zero"
-            onClick={() =>
-              handleClick("0")
-            }
-          >
-            0
-          </button>
-
-          <button
-            onClick={() =>
-              handleClick(".")
-            }
-          >
-            .
-          </button>
+          <p>
+            Wind Speed: {weather.windspeedKmph} km/h
+          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 }
